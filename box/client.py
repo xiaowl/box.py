@@ -444,7 +444,7 @@ class BoxClient(object):
         if etag:
             headers['If-Match'] = etag
 
-        self._request("delete", 'files/{}'.format(file_id), headers=headers)
+        self._request("delete", 'files/{}'.format(file_id), headers=headers, raw=True)
 
     def delete_folder(self, folder_id, etag=None, recursive=False):
         """
