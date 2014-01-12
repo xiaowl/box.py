@@ -469,7 +469,7 @@ class BoxClient(object):
         """
         Permanently deletes an item that is in the trash.
         """
-        self._request("delete", 'files/{}/trash'.format(file_id))
+        self._request("delete", 'files/{}/trash'.format(file_id), raw=True)
 
     def download_file(self, file_id, version=None):
         """

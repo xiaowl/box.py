@@ -1,5 +1,9 @@
 from StringIO import StringIO
 from datetime import tzinfo, timedelta, datetime
+try:
+    import simplejson as json
+except:
+    import json as json
 
 from flexmock import flexmock
 
@@ -45,4 +49,10 @@ utc = UTC()
 
 
 def mocked_response(content=None, status_code=200, headers=None):
-    return flexmock(ok=status_code < 400, status_code=status_code, json=lambda: content, raw=content, text=content, headers=headers)
+    text = content
+    if content is None:
+        text = ''
+    if isinstance(content, dict):
+        text = json.dumps(content)
+
+    return flexmock(ok=status_code < 400, status_code=status_code, json=lambda: json.loads(text), raw=text, text=text, headers=headers)

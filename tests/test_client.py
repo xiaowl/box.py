@@ -101,46 +101,46 @@ class TestClient(unittest.TestCase):
 
     def test_get(self):
         client = self.make_client("get", "foo", params={'arg': 'value'}, crap=1)
-        client._request('get', 'foo', {'arg': 'value'}, crap=1)
+        client._request('get', 'foo', {'arg': 'value'}, crap=1, raw=True)
 
     def test_post_dict(self):
         expected_data = {'arg': 'value'}
         client = self.make_client("post", "foo", data=expected_data, crap=1)
-        actual_response = client._request('post', 'foo', data=expected_data, crap=1)
-        self.assertEqual(None, actual_response)
+        actual_response = client._request('post', 'foo', data=expected_data, crap=1, raw=True)
+        self.assertEqual('', actual_response.raw)
 
     def test_post_data(self):
         expected_data = "mooooo"
         client = self.make_client("post", "foo", data=expected_data, crap=1)
-        actual_response = client._request('post', 'foo', data=expected_data, crap=1)
-        self.assertEqual(None, actual_response)
+        actual_response = client._request('post', 'foo', data=expected_data, crap=1, raw=True)
+        self.assertEqual('', actual_response.raw)
 
     def test_put_dict(self):
         expected_data = {'arg': 'value'}
         client = self.make_client("put", "foo", data=expected_data, crap=1)
-        actual_response = client._request('put', 'foo', data=expected_data, crap=1)
-        self.assertEqual(None, actual_response)
+        actual_response = client._request('put', 'foo', data=expected_data, crap=1, raw=True)
+        self.assertEqual('', actual_response.raw)
 
     def test_put_data(self):
         expected_data = 'mooooo'
         client = self.make_client("put", "foo", data=expected_data, crap=1)
-        actual_response = client._request('put', 'foo', data=expected_data, crap=1)
-        self.assertEqual(None, actual_response)
+        actual_response = client._request('put', 'foo', data=expected_data, crap=1, raw=True)
+        self.assertEqual('', actual_response.raw)
 
     def test_delete(self):
         custom_headers = {'hello': 'world'}
 
         client = self.make_client("delete", "foo", headers=custom_headers, crap=1)
-        actual_response = client._request('delete', 'foo', headers=custom_headers, crap=1)
-        self.assertEqual(None, actual_response)
+        actual_response = client._request('delete', 'foo', headers=custom_headers, crap=1, raw=True)
+        self.assertEqual('', actual_response.raw)
 
         # verify headers were not modified
         self.assertDictEqual(custom_headers, {'hello': 'world'})
 
     def test_delete_no_headers(self):
         client = self.make_client("delete", "foo", crap=1)
-        actual_response = client._request('delete', 'foo', crap=1)
-        self.assertEqual(None, actual_response)
+        actual_response = client._request('delete', 'foo', crap=1, raw=True)
+        self.assertEqual('', actual_response.raw)
 
     def test_automatic_refresh(self):
         credentials = CredentialsV2("access_token", "refresh_token", "client_id", "client_secret")
@@ -195,25 +195,25 @@ class TestClient(unittest.TestCase):
         result = client.get_user_info()
         self.assertDictEqual(result, {'name': 'bla'})
 
-        client = self.make_client("get", 'users/john')
+        client = self.make_client("get", 'users/john', result={})
         client.get_user_info('john')
 
     def test_get_user_list(self):
-        client = self.make_client("get", "users/", params={'limit': 123, 'offset': 456})
+        client = self.make_client("get", "users/", params={'limit': 123, 'offset': 456}, result={})
         client.get_user_list(limit=123, offset=456)
 
     def test_get_folder(self):
-        client = self.make_client("get", 'folders/666', params={'limit': 123, 'offset': 456})
+        client = self.make_client("get", 'folders/666', params={'limit': 123, 'offset': 456}, result={})
         client.get_folder(folder_id=666, limit=123, offset=456)
 
-        client = self.make_client("get", 'folders/666', params={'limit': 123, 'offset': 456, 'fields': ['hello']})
+        client = self.make_client("get", 'folders/666', params={'limit': 123, 'offset': 456, 'fields': ['hello']}, result={})
         client.get_folder(folder_id=666, limit=123, offset=456, fields=['hello'])
 
     def test_get_folder_content(self):
-        client = self.make_client("get", 'folders/666/items', params={'limit': 123, 'offset': 456})
+        client = self.make_client("get", 'folders/666/items', params={'limit': 123, 'offset': 456}, result={})
         client.get_folder_content(folder_id=666, limit=123, offset=456)
 
-        client = self.make_client("get", 'folders/666/items', params={'limit': 123, 'offset': 456, 'fields': ['hello']})
+        client = self.make_client("get", 'folders/666/items', params={'limit': 123, 'offset': 456, 'fields': ['hello']}, result={})
         client.get_folder_content(folder_id=666, limit=123, offset=456, fields=['hello'])
 
     def test_get_folder_iterator(self):
@@ -265,7 +265,7 @@ class TestClient(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_get_file_metadata(self):
-        client = self.make_client("get", 'files/123')
+        client = self.make_client("get", 'files/123', result={})
         client.get_file_metadata(123)
 
     def test_delete_file(self):
@@ -501,7 +501,7 @@ class TestClient(unittest.TestCase):
             'limit': 1000
         }
 
-        client = self.make_client("get", "events", params=args)
+        client = self.make_client("get", "events", params=args, result={})
         client.get_events()
 
         # custom arguments
@@ -510,7 +510,7 @@ class TestClient(unittest.TestCase):
             'stream_type': 'changes',
             'limit': 9
         }
-        client = self.make_client("get", "events", params=args)
+        client = self.make_client("get", "events", params=args, result={})
         client.get_events(stream_position=123, stream_type=EventFilter.CHANGES, limit=9)
 
     def test_get_path_of_file(self):
